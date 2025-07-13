@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Resilience Journey - A Mini Thought Inspection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #f4e8d0 0%, #e6d3b3 50%, #d4c4a8 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #4a3c28;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 250, 240, 0.95);
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(74, 60, 40, 0.15);
+            overflow: hidden;
+            border: 3px solid #d4c4a8;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8b7355 0%, #a0926b 100%);
+            color: #fff5e6;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,245,230,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,245,230,0.1)"/><circle cx="40" cy="70" r="1" fill="rgba(255,245,230,0.1)"/><circle cx="90" cy="80" r="2.5" fill="rgba(255,245,230,0.1)"/><circle cx="10" cy="90" r="1.8" fill="rgba(255,245,230,0.1)"/></svg>');
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 2.4rem;
+            margin-bottom: 15px;
+            font-weight: 400;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cat-character {
+            font-size: 3rem;
+            margin: 15px 0;
+            position: relative;
+            z-index: 2;
+            animation: gentleBounce 3s ease-in-out infinite;
+        }
+
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .journey-progress {
+            height: 8px;
+            background: #e6d3b3;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .journey-progress::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                #8b7355,
+                #8b7355 10px,
+                #a0926b 10px,
+                #a0926b 20px
+            );
+            transition: width 0.8s ease;
+        }
+
+        .progress-fill {
+            width: 0%;
+            transition: width 0.8s ease;
+        }
+
+        .step-header {
+            background: rgba(212, 196, 168, 0.3);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #8b7355;
+            position: relative;
+        }
+
+        .step-header::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(139,115,85,0.3)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        .step-title {
+            font-size: 1.6rem;
+            color: #4a3c28;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .step-description {
+            color: #6b5d42;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #4a3c28;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid #d4c4a8;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            min-height: 120px;
+            background: rgba(255, 250, 240, 0.8);
+            color: #4a3c28;
+            font-family: 'Georgia', serif;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #8b7355;
+            box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1);
+            background: rgba(255, 250, 240, 1);
+        }
+
+        .thought-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .thought-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 250, 240, 0.7);
+            padding: 18px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .thought-input:hover {
+            background: rgba(230, 211, 179, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .thought-input.selected {
+            border-color: #8b7355;
+            background: rgba(212, 196, 168, 0.4);
+            box-shadow: 0 4px 12px rgba(139, 115, 85, 0.15);
+        }
+
+        .thought-input input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #8b7355;
+        }
+
+        .thought-input input[type="text"] {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            padding: 8px;
+            color: #4a3c28;
+            font-family: 'Georgia', serif;
+        }
+
+        .thought-input input[type="text"]:focus {
+            outline: none;
+        }
+
+        .question-group {
+            background: rgba(212, 196, 168, 0.2);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(139, 115, 85, 0.2);
+        }
+
+        .question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #4a3c28;
+            margin-bottom: 18px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .radio-option:hover {
+            background: rgba(139, 115, 85, 0.1);
+        }
+
+        .radio-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #8b7355;
+        }
+
+        .ant-checkboxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .ant-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(255, 250, 240, 0.8);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .ant-option:hover {
+            border-color: rgba(139, 115, 85, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .ant-option.selected {
+            border-color: #8b7355;
+            background: rgba(212, 196, 168, 0.4);
+            box-shadow: 0 3px 10px rgba(139, 115, 85, 0.15);
+        }
+
+        .ant-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #8b7355;
+        }
+
+        .control-circle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .control-section {
+            background: rgba(255, 250, 240, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #d4c4a8;
+            min-height: 200px;
+        }
+
+        .control-section h3 {
+            color: #4a3c28;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            text-align: center;
+            border-bottom: 2px solid #d4c4a8;
+            padding-bottom: 10px;
+        }
+
+        .control-section.within-control {
+            border-color: #7a9b7a;
+            background: rgba(122, 155, 122, 0.1);
+        }
+
+        .control-section.outside-control {
+            border-color: #b8860b;
+            background: rgba(184, 134, 11, 0.1);
+        }
+
+        .control-section.within-control h3 {
+            color: #4a6b4a;
+            border-color: #7a9b7a;
+        }
+
+        .control-section.outside-control h3 {
+            color: #8b6914;
+            border-color: #b8860b;
+        }
+
+        .control-textarea {
+            width: 100%;
+            min-height: 120px;
+            border: 1px solid transparent;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Georgia', serif;
+            resize: vertical;
+        }
+
+        .path-choice {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .path-option {
+            background: rgba(255, 250, 240, 0.9);
+            border: 3px solid #d4c4a8;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .path-option::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 115, 85, 0.05) 0%, transparent 70%);
+            transition: opacity 0.4s ease;
+            opacity: 0;
+        }
+
+        .path-option:hover::before {
+            opacity: 1;
+        }
+
+        .path-option:hover {
+            transform: translateY(-5px);
+            border-color: #8b7355;
+            box-shadow: 0 10px 25px rgba(139, 115, 85, 0.2);
+        }
+
+        .path-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .path-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #4a3c28;
+            margin-bottom: 12px;
+        }
+
+        .path-description {
+            color: #6b5d42;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .intervention-content {
+            background: rgba(212, 196, 168, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            border-left: 5px solid #8b7355;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            font-family: 'Georgia', serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b7355 0%, #a0926b 100%);
+            color: #fff5e6;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 115, 85, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(212, 196, 168, 0.7);
+            color: #4a3c28;
+            border: 2px solid #d4c4a8;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 196, 168, 1);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .summary {
+            background: rgba(255, 250, 240, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 2px solid #d4c4a8;
+        }
+
+        .summary h3 {
+            color: #4a3c28;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .summary-section {
+            margin-bottom: 20px;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: #6b5d42;
+            margin-bottom: 8px;
+        }
+
+        .summary-content {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #8b7355;
+        }
+
+        .insight-box {
+            background: linear-gradient(135deg, #8b7355 0%, #a0926b 100%);
+            color: #fff5e6;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insight-box::before {
+            content: '🌟';
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            opacity: 0.3;
+        }
+
+        .insight-box h4 {
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-download, .btn-restart, .btn-journey {
+            padding: 12px 20px;
+            border: 2px solid #fff5e6;
+            background: transparent;
+            color: #fff5e6;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Georgia', serif;
+        }
+
+        .btn-download:hover, .btn-restart:hover, .btn-journey:hover {
+            background: #fff5e6;
+            color: #8b7355;
+        }
+
+        .skills-unlocked {
+            background: rgba(255, 250, 240, 0.9);
+            border: 2px solid #d4c4a8;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .skills-unlocked h4 {
+            color: #4a3c28;
+            margin-bottom: 10px;
+        }
+
+        .skill-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #8b7355 0%, #a0926b 100%);
+            color: #fff5e6;
+            padding: 5px 12px;
+            border-radius: 15px;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+
+        .story-text {
+            background: rgba(212, 196, 168, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #8b7355;
+            font-style: italic;
+            line-height: 1.7;
+        }
+
+        .gtd-export {
+            background: rgba(122, 155, 122, 0.1);
+            border: 2px solid #7a9b7a;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .gtd-export h4 {
+            color: #4a6b4a;
+            margin-bottom: 10px;
+        }
+
+        .export-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 8px 0;
+            border-left: 3px solid #7a9b7a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="cat-character">🐱</div>
+            <h1>🌿 The Resilience Journey 🌿</h1>
+            <p>A gentle path through difficult thoughts, guided by your inner wisdom</p>
+        </div>
+
+        <div class="content">
+            <div class="journey-progress">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <!-- Step 1: Situation -->
+            <div class="step active" id="step1">
+                <div class="step-header">
+                    <div class="step-title">🏡 The Starting Point</div>
+                    <div class="step-description">Your little cat character finds herself in a moment that feels challenging. Let's gently observe what's happening in this space and time.</div>
+                </div>
+                
+                <div class="story-text">
+                    <p>🐱 <em>You pause on the path, whiskers twitching as you sense something stirring in your heart. Taking a deep breath, you decide to explore what's happening in this moment...</em></p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="situation">What's happening in your world right now?</label>
+                    <textarea id="situation" placeholder="Describe where you are and what's occurring around you..."></textarea>
+                </div>
+            </div>
+
+            <!-- Step 2: Automatic Thoughts -->
+            <div class="step" id="step2">
+                <div class="step-header">
+                    <div class="step-title">💭 The Whispering Woods</div>
+                    <div class="step-description">In this part of your journey, you notice thoughts floating like leaves in the wind. Which whispers feel most familiar to your cat ears?</div>
+                </div>
+
+                <div class="story-text">
+                    <p>🐱 <em>As you pad deeper into the woods, you hear various whispers in the rustling leaves. Some sound worried, some anxious. You decide to listen carefully and identify which voices feel most relevant to your current experience...</em></p>
+                </div>
+
+                <div class="thought-options">
+                    <div class="thought-input">
+                        <input type="checkbox" id="thought1" name="thoughtType" value="they-think">
+                        <label for="thought1">They might think</label>
+                        <input type="text" id="thought1-text" placeholder="...">
+                    </div>
+                    <div class="thought-input">
+                        <input type="checkbox" id="thought2" name="thoughtType" value="they-see">
+                        <label for="thought2">They might see me</label>
+                        <input type="text" id="thought2-text" placeholder="...">
+                    </div>
+                    <div class="thought-input">
+                        <input type="checkbox" id="thought3" name="thoughtType" value="i-might">
+                        <label for="thought3">I might</label>
+                        <input type="text" id="thought3-text" placeholder="...">
+                    </div>
+                    <div class="thought-input">
+                        <input type="checkbox" id="thought4" name="thoughtType" value="i-feel">
+                        <label for="thought4">I might feel</label>
+                        <input type="text" id="thought4-text" placeholder="...">
+                    </div>
+                    <div class="thought-input">
+                        <input type="checkbox" id="thought5" name="thoughtType" value="i-might-not">
+                        <label for="thought5">I might not</label>
+                        <input type="text" id="thought5-text" placeholder="...">
+                    </div>
+                    <div class="thought-input">
+                        <input type="checkbox" id="thought6" name="thoughtType" value="i-might2">
+                        <label for="thought6">I might</label>
+                        <input type="text" id="thought6-text" placeholder="...">
+                    </div>
+                    <div class="thought-input">
+                        <input type="checkbox" id="thought7" name="thoughtType" value="they-might">
+                        <label for="thought7">They might</label>
+                        <input type="text" id="thought7-text" placeholder="...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Truth Check -->
+            <div class="step" id="step3">
+                <div class="step-header">
+                    <div class="step-title">🔍 The Clarity Spring</div>
+                    <div class="step-description">You've arrived at a crystal-clear spring where truth and wisdom flow. Here, your cat character can examine these thoughts with gentle curiosity.</div>
+                </div>
+
+                <div class="story-text">
+                    <p>🐱 <em>By the moonlit spring, you peer into the clear water. The reflection helps you see things more clearly. You ask yourself wise questions, the way cats have done for thousands of years...</em></p>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">Looking into the spring's truth, do I know for certain that my thought is accurate?</div>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="truth-yes" name="truthCheck" value="yes">
+                            <label for="truth-yes">Yes, I'm certain</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="truth-no" name="truthCheck" value="no">
+                            <label for="truth-no">No, I'm not certain</label>
+                        </div>
+                    </div>
+
+                    <div class="question">Which thinking patterns might be creating ripples in the clear water? (Choose any that feel familiar)</div>
+                    <div class="ant-checkboxes">
+                        <div class="ant-option">
+                            <input type="checkbox" id="ant1" value="fortune-telling">
+                            <label for="ant1">Fortune Telling</label>
+                        </div>
+                        <div class="ant-option">
+                            <input type="checkbox" id="ant2" value="disaster-making">
+                            <label for="ant2">Disaster-Making</label>
+                        </div>
+                        <div class="ant-option">
+                            <input type="checkbox" id="ant3" value="mind-reading">
+                            <label for="ant3">Mind Reading</label>
+                        </div>
+                        <div class="ant-option">
+                            <input type="checkbox" id="ant4" value="all-nothing">
+                            <label for="ant4">All or Nothing Thinking</label>
+                        </div>
+                        <div class="ant-option">
+                            <input type="checkbox" id="ant5" value="labeling">
+                            <label for="ant5">Labeling</label>
+                        </div>
+                        <div class="ant-option">
+                            <input type="checkbox" id="ant6" value="should-statements">
+                            <label for="ant6">Should Statements</label>
+                        </div>
+                        <div class="ant-option">
+                            <input type="checkbox" id="ant7" value="focus-bad">
+                            <label for="ant7">Focus on the Bad</label>
+                        </div>
+                        <div class="ant-option">
+                            <input type="checkbox" id="ant8" value="feeling-fact">
+                            <label for="ant8">Feeling Makes Fact</label>
+                        </div>
+                        <div class="ant-option">
+                            <input type="checkbox" id="ant9" value="not-helpful">
+                            <label for="ant9">Not Helpful Thoughts</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Circle of Control -->
+            <div class="step" id="step4">
+                <div class="step-header">
+                    <div class="step-title">⚖️ The Sorting Clearing</div>
+                    <div class="step-description">Your cat character has discovered a peaceful clearing with two ancient baskets. Here, you can sort your worries - some belong in the "I can influence this" basket, others in the "This is beyond my paws" basket.</div>
+                </div>
+
+                <div class="story-text">
+                    <p>🐱 <em>In this sacred space, you understand an old cat wisdom: there are things you can chase and catch, and things that are like clouds - beautiful to observe but impossible to hold. You begin to sort your concerns with this gentle wisdom...</em></p>
+                </div>
+
+                <div class="control-circle">
+                    <div class="control-section within-control">
+                        <h3>🐾 Within My Paws (I Can Influence This)</h3>
+                        <textarea class="control-textarea" id="withinControl" placeholder="What aspects of this situation can I actually influence or control? What actions could I take?"></textarea>
+                    </div>
+                    <div class="control-section outside-control">
+                        <h3>☁️ Beyond My Paws (Like Clouds to Observe)</h3>
+                        <textarea class="control-textarea" id="outsideControl" placeholder="What parts of this situation are outside my control? What can I acknowledge and then let flow like clouds?"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Choose Your Path -->
+            <div class="step" id="step5">
+                <div class="step-header">
+                    <div class="step-title">🌟 The Crossroads of Wisdom</div>
+                    <div class="step-description">Your cat character arrives at a magical crossroads where two gentle paths appear, each offering a different way forward. Your inner wisdom knows which path calls to you right now.</div>
+                </div>
+
+                <div class="story-text">
+                    <p>🐱 <em>You sit quietly at the crossroads, tail curled around your paws. Two paths stretch before you, each glowing softly with its own unique energy. You trust your cat instincts to guide you toward what you need most in this moment...</em></p>
+                </div>
+
+                <div class="path-choice" id="pathChoice">
+                    <!-- Paths will be dynamically generated based on responses -->
+                </div>
+
+                <div class="intervention-content" id="interventionContent" style="display: none;">
+                    <!-- Selected intervention content will appear here -->
+                </div>
+            </div>
+
+            <!-- Step 6: Summary & Journey Completion -->
+            <div class="step" id="step6">
+                <div class="step-header">
+                    <div class="step-title">🏆 The Journey's Heart</div>
+                    <div class="step-description">Your cat character has traveled far and learned much. In this sacred space, you can see the whole journey and celebrate the wisdom you've gathered along the way.</div>
+                </div>
+
+                <div class="story-text">
+                    <p>🐱 <em>You find yourself in a beautiful meadow filled with soft light. Looking back on your journey, you feel proud of your courage to explore difficult thoughts with such kindness and wisdom. Your cat heart is fuller now, carrying new tools and insights...</em></p>
+                </div>
+
+                <div class="summary" id="thoughtSummary">
+                    <!-- Summary will be populated by JavaScript -->
+                </div>
+
+                <div class="skills-unlocked" id="skillsUnlocked">
+                    <h4>🌟 Skills Your Cat Character Has Unlocked</h4>
+                    <div id="skillBadges"></div>
+                </div>
+
+                <div class="gtd-export" id="gtdExport" style="display: none;">
+                    <h4>📋 Action Items for Your Index Cards</h4>
+                    <div id="exportItems"></div>
+                    <button class="btn-journey" onclick="exportToGTD()">📝 Copy to Clipboard for GTD System</button>
+                </div>
+
+                <div class="insight-box">
+                    <h4>💝 A Gift from Your Journey</h4>
+                    <p id="insightText">Your cat character's wisdom speaks...</p>
+                    
+                    <div class="action-buttons">
+                        <button class="btn-restart" onclick="startNewJourney()">🔄 Begin New Journey</button>
+                        <button class="btn-journey" onclick="continueJourney()">✨ Continue Exploring</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousStep()" disabled>← Previous Step</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next Step →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 6;
+        let selectedPath = null;
+        let journeyData = {
+            skillsUnlocked: [],
+            pathsTaken: [],
+            insights: []
+        };
+
+        const interventions = {
+            grounding: {
+                icon: "🌈",
+                title: "Path of Grounding",
+                description: "Let your senses guide you back to the present moment",
+                content: `
+                    <h3>🌈 The Rainbow Quest</h3>
+                    <p>Your cat character loves this gentle game! Look around and find objects that match each color:</p>
+                    <div style="margin: 20px 0;">
+                        <div style="margin: 10px 0;">🔴 <strong>Red:</strong> <input type="text" placeholder="Something red you can see..." style="width: 60%; padding: 5px; border-radius: 5px; border: 1px solid #d4c4a8;"></div>
+                        <div style="margin: 10px 0;">🟡 <strong>Yellow:</strong> <input type="text" placeholder="Something yellow..." style="width: 60%; padding: 5px; border-radius: 5px; border: 1px solid #d4c4a8;"></div>
+                        <div style="margin: 10px 0;">🟢 <strong>Green:</strong> <input type="text" placeholder="Something green..." style="width: 60%; padding: 5px; border-radius: 5px; border: 1px solid #d4c4a8;"></div>
+                        <div style="margin: 10px 0;">🔵 <strong>Blue:</strong> <input type="text" placeholder="Something blue..." style="width: 60%; padding: 5px; border-radius: 5px; border: 1px solid #d4c4a8;"></div>
+                        <div style="margin: 10px 0;">🟣 <strong>Purple:</strong> <input type="text" placeholder="Something purple..." style="width: 60%; padding: 5px; border-radius: 5px; border: 1px solid #d4c4a8;"></div>
+                    </div>
+                    <div class="story-text">
+                        <p>🐱 <em>As you notice each color, your cat character feels more grounded and present. Colors are like anchors that help bring your awareness back to this moment, right here, right now.</em></p>
+                    </div>
+                    <p><strong>Now take three slow breaths, noticing any sounds, textures, or scents around you...</strong></p>
+                `,
+                skill: "Sensory Grounding Master"
+            },
+            movement: {
+                icon: "🐾",
+                title: "Path of Movement",
+                description: "Let your body's wisdom guide you to feeling better",
+                content: `
+                    <h3>🐾 The Cat Stretch Journey</h3>
+                    <p>Your cat character knows that movement is medicine! Try these gentle movements:</p>
+                    <div style="margin: 20px 0;">
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>🧘‍♀️ Cat Stretch:</strong> Reach your arms up high, then gently arch your back and stretch like a content cat in the sunshine.
+                        </div>
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>🚶‍♀️ Mindful Steps:</strong> Take 10 slow, deliberate steps. Feel your feet connecting with the ground.
+                        </div>
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>✋ Gentle Fidget:</strong> Roll your shoulders, wiggle your fingers, or gently tap your legs - whatever feels good to your body.
+                        </div>
+                    </div>
+                    <div class="story-text">
+                        <p>🐱 <em>Your cat character purrs softly as the movement helps shift the energy in your body. Cats know that sometimes the best way to change how we feel inside is to move on the outside.</em></p>
+                    </div>
+                    <p><strong>How does your body feel now? What movement would feel good next?</strong></p>
+                `,
+                skill: "Movement Medicine Keeper"
+            },
+            meaning: {
+                icon: "💫",
+                title: "Path of Meaning",
+                description: "Connect with what matters most deeply to you",
+                content: `
+                    <h3>💫 The Values Compass</h3>
+                    <p>Your cat character helps you remember what truly matters in your heart:</p>
+                    <div style="margin: 20px 0;">
+                        <div style="margin: 15px 0;">
+                            <strong>🌱 What you value most:</strong> Learning, curiosity, kindness, love for all beings, the power of story, interconnection, creativity
+                        </div>
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>Reflection:</strong> Even in this challenging moment, how might one of these values guide you? 
+                            <textarea style="width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px solid #d4c4a8;" placeholder="What small action could honor what matters most to you?"></textarea>
+                        </div>
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>One small step:</strong> What's one tiny action that connects you to your values today?
+                            <textarea style="width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px solid #d4c4a8;" placeholder="Something small but meaningful..."></textarea>
+                        </div>
+                    </div>
+                    <div class="story-text">
+                        <p>🐱 <em>Your cat character nods wisely. Even when external things feel uncertain, your values remain like the North Star - steady and true, guiding you home to what matters most.</em></p>
+                    </div>
+                `,
+                skill: "Values Compass Navigator"
+            },
+            hope: {
+                icon: "🌅",
+                title: "Path of Hope",
+                description: "Find the small light that can guide you forward",
+                content: `
+                    <h3>🌅 The Dawn Finder</h3>
+                    <p>Your cat character specializes in finding small lights in dark places:</p>
+                    <div style="margin: 20px 0;">
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>🔍 One small thing going well:</strong> Even in difficulty, what's one small thing that's okay or better right now?
+                            <textarea style="width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px solid #d4c4a8;" placeholder="Maybe something as simple as a warm cup of tea, a kind text, or Woody's purr..."></textarea>
+                        </div>
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>🌱 One small step forward:</strong> What's the tiniest step you could take that would move things in a better direction?
+                            <textarea style="width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px solid #d4c4a8;" placeholder="Something so small it feels almost easy..."></textarea>
+                        </div>
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>🤝 One person in your corner:</strong> Who is one person who cares about you and wants good things for you?
+                            <textarea style="width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px solid #d4c4a8;" placeholder="Maybe a partner, family member, friend, colleague, or even your cat character..."></textarea>
+                        </div>
+                    </div>
+                    <div class="story-text">
+                        <p>🐱 <em>Your cat character purrs softly, reminding you that hope isn't about having big answers - it's about finding the small lights that help you take the next step.</em></p>
+                    </div>
+                `,
+                skill: "Dawn Light Discoverer"
+            },
+            acceptance: {
+                icon: "🍃",
+                title: "Path of Acceptance",
+                description: "Practice the gentle art of working with what is",
+                content: `
+                    <h3>🍃 The Flowing Stream</h3>
+                    <p>Your cat character teaches the wisdom of flowing like water around obstacles:</p>
+                    <div style="margin: 20px 0;">
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>🌊 What can I accept right now?</strong> What aspects of this situation can you acknowledge without needing to change them immediately?
+                            <textarea style="width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px solid #d4c4a8;" placeholder="What is simply true right now, even if it's not what I would choose?"></textarea>
+                        </div>
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>💝 What can I be gentle with?</strong> What part of yourself or your situation could use some kindness right now?
+                            <textarea style="width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px solid #d4c4a8;" placeholder="How might you offer yourself the same compassion you'd give a dear friend?"></textarea>
+                        </div>
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>🌱 What can I tend?</strong> Within what you can accept, what small thing can you nurture or care for?
+                            <textarea style="width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px solid #d4c4a8;" placeholder="What needs tending in your life garden right now?"></textarea>
+                        </div>
+                    </div>
+                    <div class="story-text">
+                        <p>🐱 <em>Your cat character demonstrates perfect acceptance - cats never fight against what is, but they're also always ready to act when action is needed. This is the wisdom of flowing water.</em></p>
+                    </div>
+                `,
+                skill: "Gentle Acceptance Guide"
+            },
+            action: {
+                icon: "⚡",
+                title: "Path of Action",
+                description: "Channel your energy into purposeful movement forward",
+                content: `
+                    <h3>⚡ The Energy Focus</h3>
+                    <p>Your cat character helps you channel your energy like a focused beam of sunlight:</p>
+                    <div style="margin: 20px 0;">
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>🎯 One concrete action I can take:</strong> From your "Within My Paws" list, what's one specific thing you could do today?
+                            <textarea style="width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px solid #d4c4a8;" placeholder="Something specific and doable..."></textarea>
+                        </div>
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>📅 When will I do this?</strong> Give your action a specific time and place:
+                            <textarea style="width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px solid #d4c4a8;" placeholder="Today at 3pm, or tomorrow morning, or..."></textarea>
+                        </div>
+                        <div style="margin: 15px 0; padding: 15px; background: rgba(255,250,240,0.8); border-radius: 10px;">
+                            <strong>🛠️ What will make this easier?</strong> What do you need to set yourself up for success?
+                            <textarea style="width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: 1px solid #d4c4a8;" placeholder="What preparation, tools, or support would help?"></textarea>
+                        </div>
+                    </div>
+                    <div class="story-text">
+                        <p>🐱 <em>Your cat character stretches purposefully. Cats are masters of focused action - they rest when it's time to rest, and when it's time to act, they move with clear intention.</em></p>
+                    </div>
+                `,
+                skill: "Purposeful Action Taker"
+            }
+        };
+
+        function updateProgress() {
+            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentStep === 1;
+            
+            if (currentStep === totalSteps) {
+                nextBtn.style.display = 'none';
+            } else if (currentStep === 5) {
+                nextBtn.textContent = 'Complete Journey 🏆';
+                nextBtn.onclick = completeJourney;
+            } else {
+                nextBtn.textContent = 'Next Step →';
+                nextBtn.onclick = nextStep;
+                nextBtn.style.display = 'block';
+            }
+        }
+
+        function showStep(step) {
+            // Hide all steps
+            for (let i = 1; i <= totalSteps; i++) {
+                document.getElementById(`step${i}`).classList.remove('active');
+            }
+            // Show current step
+            document.getElementById(`step${step}`).classList.add('active');
+            updateProgress();
+            updateButtons();
+        }
+
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStep === 4) {
+                    generatePathOptions();
+                }
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    showStep(currentStep);
+                }
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        function validateCurrentStep() {
+            if (currentStep === 1) {
+                const situation = document.getElementById('situation').value.trim();
+                if (!situation) {
+                    alert('Your cat character encourages you to describe what\'s happening before continuing the journey.');
+                    return false;
+                }
+            }
+            
+            if (currentStep === 2) {
+                const checkboxes = document.querySelectorAll('input[name="thoughtType"]:checked');
+                let hasValidThought = false;
+                
+                checkboxes.forEach(checkbox => {
+                    const textInput = document.getElementById(checkbox.id + '-text');
+                    if (textInput && textInput.value.trim()) {
+                        hasValidThought = true;
+                    }
+                });
+                
+                if (!hasValidThought) {
+                    alert('Your cat character gently suggests choosing at least one thought pattern and completing it.');
+                    return false;
+                }
+            }
+            
+            if (currentStep === 3) {
+                const truthCheck = document.querySelector('input[name="truthCheck"]:checked');
+                if (!truthCheck) {
+                    alert('Your cat character waits patiently for you to reflect on whether you know your thought is true.');
+                    return false;
+                }
+            }
+
+            if (currentStep === 4) {
+                const withinControl = document.getElementById('withinControl').value.trim();
+                const outsideControl = document.getElementById('outsideControl').value.trim();
+                if (!withinControl && !outsideControl) {
+                    alert('Your cat character encourages you to sort at least some thoughts into the baskets before moving forward.');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function generatePathOptions() {
+            const pathChoice = document.getElementById('pathChoice');
+            const truthCheck = document.querySelector('input[name="truthCheck"]:checked')?.value;
+            const selectedANTs = Array.from(document.querySelectorAll('.ant-option input[type="checkbox"]:checked')).map(cb => cb.value);
+            const withinControl = document.getElementById('withinControl').value.trim();
+            const outsideControl = document.getElementById('outsideControl').value.trim();
+            const situation = document.getElementById('situation').value.toLowerCase();
+
+            // Sophisticated path scoring system
+            let pathScores = {
+                grounding: 0,
+                movement: 0,
+                meaning: 0,
+                hope: 0,
+                acceptance: 0,
+                action: 0
+            };
+
+            // ANT Cluster Analysis
+            const antClusters = {
+                'anxiety-future': ['fortune-telling', 'disaster-making', 'mind-reading'],
+                'self-criticism': ['labeling', 'should-statements', 'all-nothing'],
+                'despair-hopelessness': ['focus-bad', 'feeling-fact', 'not-helpful'],
+                'rigidity': ['all-nothing', 'should-statements']
+            };
+
+            // Score based on ANT clusters
+            const anxietyFutureCount = selectedANTs.filter(ant => antClusters['anxiety-future'].includes(ant)).length;
+            const selfCriticismCount = selectedANTs.filter(ant => antClusters['self-criticism'].includes(ant)).length;
+            const despairCount = selectedANTs.filter(ant => antClusters['despair-hopelessness'].includes(ant)).length;
+            const rigidityCount = selectedANTs.filter(ant => antClusters['rigidity'].includes(ant)).length;
+
+            // Primary ANT-based scoring
+            pathScores.grounding += anxietyFutureCount * 3; // Anxiety/future focus → grounding
+            pathScores.meaning += selfCriticismCount * 3; // Self-criticism → values connection
+            pathScores.hope += despairCount * 3; // Despair → hope building
+            pathScores.acceptance += rigidityCount * 2; // Rigidity → flexibility
+
+            // High ANT count = overwhelm → body-based interventions
+            if (selectedANTs.length >= 6) {
+                pathScores.movement += 4;
+                pathScores.grounding += 3;
+            }
+
+            // Control analysis - look at relative amounts, not just presence
+            const withinControlLength = withinControl.length;
+            const outsideControlLength = outsideControl.length;
+            
+            if (withinControlLength > outsideControlLength + 50) {
+                pathScores.action += 3; // Much more within control → action oriented
+            } else if (outsideControlLength > withinControlLength + 50) {
+                pathScores.acceptance += 3; // Much more outside control → acceptance needed
+            } else if (withinControlLength > 0 && outsideControlLength > 0) {
+                // Balanced → moderate scores for both
+                pathScores.action += 1;
+                pathScores.acceptance += 1;
+            }
+
+            // Situation context analysis
+            const stressKeywords = ['job', 'work', 'money', 'housing', 'health', 'relationship'];
+            const overwhelmKeywords = ['overwhelmed', 'too much', 'can\'t handle', 'exhausted'];
+            const urgencyKeywords = ['deadline', 'urgent', 'crisis', 'emergency'];
+
+            const hasStressKeywords = stressKeywords.some(keyword => situation.includes(keyword));
+            const hasOverwhelmKeywords = overwhelmKeywords.some(keyword => situation.includes(keyword));
+            const hasUrgencyKeywords = urgencyKeywords.some(keyword => situation.includes(keyword));
+
+            if (hasOverwhelmKeywords) {
+                pathScores.grounding += 2;
+                pathScores.movement += 2;
+            }
+
+            if (hasStressKeywords) {
+                pathScores.action += 1;
+                pathScores.hope += 1;
+            }
+
+            if (hasUrgencyKeywords) {
+                pathScores.action += 2;
+                pathScores.grounding += 1;
+            }
+
+            // Truth check influence
+            if (truthCheck === 'no') {
+                pathScores.acceptance += 1; // Uncertainty → acceptance helpful
+                pathScores.hope += 1; // Opens space for new perspectives
+            }
+
+            // Values-based language detection (based on user's stated values)
+            const valuesKeywords = ['learn', 'curious', 'kind', 'story', 'creative', 'connect'];
+            const hasValuesLanguage = valuesKeywords.some(keyword => situation.includes(keyword));
+            if (hasValuesLanguage) {
+                pathScores.meaning += 2;
+            }
+
+            // Movement preference (from user's assessment data)
+            if (situation.includes('fidget') || situation.includes('restless') || situation.includes('energy')) {
+                pathScores.movement += 2;
+            }
+
+            // Prevent always getting the same paths by adding some variety
+            const previousPaths = journeyData.pathsTaken || [];
+            previousPaths.forEach(path => {
+                pathScores[path] -= 1; // Slight penalty for recently used paths
+            });
+
+            // Select top 2 paths
+            const sortedPaths = Object.entries(pathScores)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 2);
+
+            let recommendedPaths = sortedPaths.map(([path, score]) => path);
+
+            // Fallback if scores are too low or tied
+            if (sortedPaths[0][1] === 0 || sortedPaths[0][1] === sortedPaths[1][1]) {
+                // Intelligent defaults based on what we know works well
+                if (selectedANTs.length >= 4) {
+                    recommendedPaths = ['grounding', 'movement']; // High ANT count = overwhelm
+                } else if (withinControl && outsideControl) {
+                    recommendedPaths = ['action', 'acceptance']; // Balanced control awareness
+                } else {
+                    recommendedPaths = ['hope', 'meaning']; // General resilience building
+                }
+            }
+
+            // Generate HTML for path options with dynamic descriptions
+            pathChoice.innerHTML = recommendedPaths.map(pathKey => {
+                const path = interventions[pathKey];
+                return `
+                    <div class="path-option" onclick="selectPath('${pathKey}')">
+                        <div class="path-icon">${path.icon}</div>
+                        <div class="path-title">${path.title}</div>
+                        <div class="path-description">${path.description}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Debug info (can remove later)
+            console.log('Path scores:', pathScores);
+            console.log('Selected paths:', recommendedPaths);
+            console.log('ANT analysis:', { anxietyFutureCount, selfCriticismCount, despairCount, rigidityCount });
+        }
+
+        function selectPath(pathKey) {
+            selectedPath = pathKey;
+            const intervention = interventions[pathKey];
+            
+            // Add to journey data
+            journeyData.pathsTaken.push(pathKey);
+            journeyData.skillsUnlocked.push(intervention.skill);
+            
+            // Show intervention content with completion button
+            const content = document.getElementById('interventionContent');
+            content.innerHTML = intervention.content + `
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="completeIntervention()" style="padding: 15px 30px; font-size: 1.1rem;">
+                        ✨ Complete This Path ✨
+                    </button>
+                </div>
+            `;
+            content.style.display = 'block';
+            
+            // Hide path choices
+            document.getElementById('pathChoice').style.display = 'none';
+            
+            // Update next button to be hidden since we have the complete button in the intervention
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.style.display = 'none';
+        }
+
+        function completeIntervention() {
+            // This function handles completing an individual intervention
+            generateSummary();
+            generateInsight();
+            generateGTDExport();
+            currentStep = 6;
+            showStep(currentStep);
+        }
+
+        function completeJourney() {
+            generateSummary();
+            generateInsight();
+            generateGTDExport();
+            currentStep = 6;
+            showStep(currentStep);
+        }
+
+        function generateSummary() {
+            const situation = document.getElementById('situation').value;
+            const truthCheck = document.querySelector('input[name="truthCheck"]:checked')?.value;
+            const withinControl = document.getElementById('withinControl').value;
+            const outsideControl = document.getElementById('outsideControl').value;
+            
+            // Get selected thoughts
+            const selectedThoughts = [];
+            const checkboxes = document.querySelectorAll('input[name="thoughtType"]:checked');
+            checkboxes.forEach(checkbox => {
+                const textInput = document.getElementById(checkbox.id + '-text');
+                if (textInput && textInput.value.trim()) {
+                    const label = document.querySelector(`label[for="${checkbox.id}"]`).textContent;
+                    selectedThoughts.push(`${label}: ${textInput.value}`);
+                }
+            });
+
+            // Get selected ANTs
+            const selectedANTs = [];
+            const antCheckboxes = document.querySelectorAll('.ant-option input[type="checkbox"]:checked');
+            antCheckboxes.forEach(checkbox => {
+                const label = document.querySelector(`label[for="${checkbox.id}"]`).textContent;
+                selectedANTs.push(label);
+            });
+
+            // Generate summary HTML
+            let summaryHTML = `
+                <h3>🐱 Your Cat Character's Journey Summary</h3>
+                
+                <div class="summary-section">
+                    <div class="summary-label">🏡 Where the journey began:</div>
+                    <div class="summary-content">${situation}</div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-label">💭 Thoughts discovered in the Whispering Woods:</div>
+                    <div class="summary-content">${selectedThoughts.join('<br>')}</div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-label">🔍 Truth discovered at the Clarity Spring:</div>
+                    <div class="summary-content">Do I know for certain this is true? ${truthCheck === 'yes' ? 'Yes' : 'No'}</div>
+                </div>
+
+                <div class="summary-section">
+                    <div class="summary-label">🐾 Within My Paws (I can influence):</div>
+                    <div class="summary-content">${withinControl || 'Still exploring...'}</div>
+                </div>
+
+                <div class="summary-section">
+                    <div class="summary-label">☁️ Beyond My Paws (To observe like clouds):</div>
+                    <div class="summary-content">${outsideControl || 'Still exploring...'}</div>
+                </div>
+            `;
+
+            if (selectedANTs.length > 0) {
+                summaryHTML += `
+                    <div class="summary-section">
+                        <div class="summary-label">🌊 Thinking patterns noticed:</div>
+                        <div class="summary-content">${selectedANTs.join(', ')}</div>
+                    </div>
+                `;
+            }
+
+            if (selectedPath) {
+                summaryHTML += `
+                    <div class="summary-section">
+                        <div class="summary-label">🌟 Path chosen at the Crossroads:</div>
+                        <div class="summary-content">${interventions[selectedPath].title} - ${interventions[selectedPath].description}</div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('thoughtSummary').innerHTML = summaryHTML;
+
+            // Show skills unlocked
+            const skillsContainer = document.getElementById('skillBadges');
+            skillsContainer.innerHTML = journeyData.skillsUnlocked.map(skill => 
+                `<span class="skill-badge">${skill}</span>`
+            ).join('');
+        }
+
+        function generateInsight() {
+            const truthCheck = document.querySelector('input[name="truthCheck"]:checked')?.value;
+            const selectedANTs = Array.from(document.querySelectorAll('.ant-option input[type="checkbox"]:checked')).map(cb => cb.value);
+            const withinControl = document.getElementById('withinControl').value.trim();
+            
+            let insight = "🐱 Your cat character purrs with wisdom: ";
+            
+            if (truthCheck === 'no') {
+                insight += "You've discovered something powerful - recognizing when thoughts aren't certainly true is like finding a key that unlocks you from mental cages. ";
+            }
+
+            if (withinControl) {
+                insight += "You've identified things within your paws to influence - this is where your power lies, like a cat who knows exactly where to place each step. ";
+            }
+
+            if (selectedANTs.includes('fortune-telling')) {
+                insight += "Notice how your mind tries to predict the future? Your cat character reminds you that even cats, with all their wisdom, can't know what tomorrow will bring - and that's okay. ";
+            }
+            
+            if (selectedANTs.includes('mind-reading')) {
+                insight += "You've caught your mind trying to read others' thoughts! Your cat character knows that even cats, with their incredible intuition, can't actually know what others are thinking. ";
+            }
+            
+            if (selectedANTs.includes('all-nothing')) {
+                insight += "Your cat character sees the world in gentle grays, not harsh blacks and whites. Life is like a sunrise - full of gradations and soft transitions. ";
+            }
+
+            if (selectedPath) {
+                const pathWisdom = {
+                    'grounding': "You chose the path of grounding - like a cat who stops to really notice their surroundings, you're learning to anchor yourself in the present moment.",
+                    'movement': "You chose movement as medicine - cats know that sometimes the best way to shift energy is to let the body lead the way.",
+                    'meaning': "You chose to connect with what matters most - like a cat who always knows what truly deserves their attention.",
+                    'hope': "You chose to seek the small lights - cats are excellent at finding warm sunny spots even on cloudy days.",
+                    'acceptance': "You chose the path of flowing like water - cats are masters of this, never fighting what is, but always ready to respond wisely.",
+                    'action': "You chose purposeful action - like a cat who moves with clear intention when it's time to act."
+                };
+                insight += pathWisdom[selectedPath] + " ";
+            }
+
+            insight += "Remember: you have the wisdom to question your thoughts and the courage to choose your response. That's a true superpower. 💙";
+            
+            document.getElementById('insightText').textContent = insight;
+        }
+
+        function generateGTDExport() {
+            const withinControl = document.getElementById('withinControl').value.trim();
+            const exportContainer = document.getElementById('gtdExport');
+            const exportItems = document.getElementById('exportItems');
+            
+            let items = [];
+            
+            if (withinControl) {
+                // Parse the within control items and create actionable index cards
+                const lines = withinControl.split('\n').filter(line => line.trim());
+                lines.forEach(line => {
+                    if (line.trim()) {
+                        items.push(`@desk - ${line.trim()}`);
+                    }
+                });
+            }
+
+            // For action path, consolidate the action planning into single items
+            if (selectedPath === 'action') {
+                const actionTextareas = document.querySelectorAll('#interventionContent textarea');
+                let actionText = '';
+                let whenText = '';
+                let prepText = '';
+                
+                actionTextareas.forEach((textarea, index) => {
+                    if (index === 0) actionText = textarea.value.trim();
+                    if (index === 1) whenText = textarea.value.trim();
+                    if (index === 2) prepText = textarea.value.trim();
+                });
+                
+                if (actionText) {
+                    let consolidatedAction = `@runway - ${actionText}`;
+                    if (whenText) consolidatedAction += ` (${whenText})`;
+                    if (prepText) consolidatedAction += ` [Prep: ${prepText}]`;
+                    items.push(consolidatedAction);
+                }
+            } else {
+                // For other paths, add meaningful actions from the intervention
+                const actionTextareas = document.querySelectorAll('#interventionContent textarea');
+                actionTextareas.forEach(textarea => {
+                    if (textarea.value.trim()) {
+                        items.push(`@desk - ${textarea.value.trim()}`);
+                    }
+                });
+            }
+
+            if (items.length > 0) {
+                exportContainer.style.display = 'block';
+                exportItems.innerHTML = items.map(item => 
+                    `<div class="export-item">${item}</div>`
+                ).join('');
+            }
+        }
+
+        function exportToGTD() {
+            const items = Array.from(document.querySelectorAll('.export-item')).map(item => item.textContent);
+            const text = "GTD Action Items from Resilience Journey:\n\n" + items.join('\n');
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('🐱 Copied to clipboard! Your cat character is proud of your commitment to taking action.');
+            });
+        }
+
+        let isDownloading = false; // Prevent multiple simultaneous downloads
+
+        function downloadJourney() {
+            console.log('downloadJourney function called');
+            
+            if (isDownloading) {
+                console.log('Download already in progress, ignoring click');
+                return;
+            }
+            
+            isDownloading = true;
+            
+            try {
+                const summaryElement = document.getElementById('thoughtSummary');
+                const insightElement = document.getElementById('insightText');
+                
+                console.log('Summary element found:', !!summaryElement);
+                console.log('Insight element found:', !!insightElement);
+                
+                if (!summaryElement || !insightElement) {
+                    console.error('Required elements not found');
+                    alert('🐱 Oops! Unable to find the journey content to save.');
+                    isDownloading = false;
+                    return;
+                }
+                
+                const summaryText = summaryElement.innerText || summaryElement.textContent || 'Journey summary not available';
+                const insightText = insightElement.textContent || insightElement.innerText || 'Insight not available';
+                const timestamp = new Date().toLocaleString();
+                const skills = (journeyData && journeyData.skillsUnlocked) ? journeyData.skillsUnlocked.join(', ') : 'No skills recorded';
+                
+                console.log('Data prepared for download');
+                
+                const fullText = `🐱 The Resilience Journey - ${timestamp}
+
+${summaryText}
+
+🌟 Skills Unlocked: ${skills}
+
+💝 Journey Gift:
+${insightText}
+
+🐾 Your cat character's reminder: You have traveled far and learned much. Keep this wisdom close to your heart.`;
+                
+                // Try to download
+                console.log('Creating download...');
+                const blob = new Blob([fullText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `resilience-journey-${new Date().toISOString().split('T')[0]}.txt`;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                
+                console.log('Triggering download click...');
+                a.click();
+                
+                // Cleanup
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    console.log('Download cleanup complete');
+                }, 100);
+                
+                // Show confirmation
+                setTimeout(() => {
+                    alert('🐱 Your journey has been saved! Check your downloads folder.');
+                    isDownloading = false;
+                }, 200);
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                isDownloading = false;
+                
+                // Fallback: copy to clipboard
+                try {
+                    console.log('Attempting clipboard fallback...');
+                    const summaryText = document.getElementById('thoughtSummary')?.innerText || 'Summary not available';
+                    const insightText = document.getElementById('insightText')?.textContent || 'Insight not available';
+                    const timestamp = new Date().toLocaleString();
+                    
+                    const fallbackText = `🐱 The Resilience Journey - ${timestamp}\n\n${summaryText}\n\n💝 Journey Gift:\n${insightText}`;
+                    
+                    navigator.clipboard.writeText(fallbackText).then(() => {
+                        alert('🐱 Journey copied to clipboard! You can paste it into a document.');
+                    }).catch((clipError) => {
+                        console.error('Clipboard error:', clipError);
+                        alert('🐱 Please manually copy the journey text from this page to save it.');
+                    });
+                } catch (clipboardError) {
+                    console.error('Clipboard fallback error:', clipboardError);
+                    alert('🐱 Please manually copy the journey text from this page to save it.');
+                }
+            }
+        }
+
+        function startNewJourney() {
+            console.log('startNewJourney function called');
+            
+            // Create custom confirmation modal instead of browser confirm()
+            const confirmModal = document.createElement('div');
+            confirmModal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                font-family: Georgia, serif;
+            `;
+            
+            confirmModal.innerHTML = `
+                <div style="
+                    background: #fff5e6;
+                    padding: 40px;
+                    border-radius: 20px;
+                    border: 3px solid #8b7355;
+                    text-align: center;
+                    max-width: 500px;
+                    margin: 20px;
+                ">
+                    <div style="font-size: 3rem; margin-bottom: 20px;">🐱</div>
+                    <h3 style="color: #4a3c28; margin-bottom: 20px;">Your cat character asks:</h3>
+                    <p style="color: #6b5d42; font-size: 1.1rem; margin-bottom: 30px; line-height: 1.6;">
+                        Are you sure you want to begin a fresh journey? This will clear your current exploration and take you back to the starting point.
+                    </p>
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button onclick="confirmReset()" style="
+                            background: linear-gradient(135deg, #8b7355 0%, #a0926b 100%);
+                            color: #fff5e6;
+                            border: none;
+                            padding: 12px 25px;
+                            border-radius: 10px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            font-family: Georgia, serif;
+                        ">✅ Yes, Start Fresh</button>
+                        <button onclick="cancelReset()" style="
+                            background: #6c757d;
+                            color: white;
+                            border: none;
+                            padding: 12px 25px;
+                            border-radius: 10px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            font-family: Georgia, serif;
+                        ">❌ Cancel</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(confirmModal);
+        }
+
+        function confirmReset() {
+            console.log('User confirmed reset');
+            
+            // Remove the modal
+            const modal = document.querySelector('div[style*="position: fixed"]');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+            
+            try {
+                // Reset all form inputs
+                const inputs = document.querySelectorAll('input, textarea');
+                console.log('Found inputs:', inputs.length);
+                
+                inputs.forEach(input => {
+                    if (input.type === 'checkbox' || input.type === 'radio') {
+                        input.checked = false;
+                    } else {
+                        input.value = '';
+                    }
+                });
+                
+                // Reset styling
+                document.querySelectorAll('.thought-input, .ant-option').forEach(element => {
+                    element.classList.remove('selected');
+                });
+                
+                // Reset journey data
+                journeyData = { skillsUnlocked: [], pathsTaken: [], insights: [] };
+                selectedPath = null;
+                
+                // Hide intervention content
+                const interventionContent = document.getElementById('interventionContent');
+                if (interventionContent) {
+                    interventionContent.style.display = 'none';
+                }
+                
+                // Reset path choice display
+                const pathChoice = document.getElementById('pathChoice');
+                if (pathChoice) {
+                    pathChoice.style.display = 'grid';
+                    pathChoice.innerHTML = '';
+                }
+                
+                // Hide GTD export
+                const gtdExport = document.getElementById('gtdExport');
+                if (gtdExport) {
+                    gtdExport.style.display = 'none';
+                }
+                
+                // Reset buttons
+                const nextBtn = document.getElementById('nextBtn');
+                if (nextBtn) {
+                    nextBtn.textContent = 'Next Step →';
+                    nextBtn.onclick = nextStep;
+                    nextBtn.style.display = 'block';
+                }
+                
+                // Go back to step 1
+                currentStep = 1;
+                showStep(currentStep);
+                
+                console.log('Journey reset complete');
+                
+            } catch (error) {
+                console.error('Reset error:', error);
+                alert('🐱 Had trouble resetting. Please refresh the page to start fresh.');
+            }
+        }
+
+        function cancelReset() {
+            console.log('User cancelled reset');
+            
+            // Remove the modal
+            const modal = document.querySelector('div[style*="position: fixed"]');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+
+        function continueJourney() {
+            console.log('continueJourney function called'); // Debug line
+            try {
+                // Generate new path options (excluding already taken paths if desired, or allow re-exploration)
+                generatePathOptions();
+                
+                // Go back to crossroads to explore another path
+                currentStep = 5;
+                
+                // Show path choices again
+                const pathChoice = document.getElementById('pathChoice');
+                if (pathChoice) {
+                    pathChoice.style.display = 'grid';
+                }
+                
+                // Hide previous intervention
+                const interventionContent = document.getElementById('interventionContent');
+                if (interventionContent) {
+                    interventionContent.style.display = 'none';
+                }
+                
+                // Reset selected path for this exploration
+                selectedPath = null;
+                
+                showStep(currentStep);
+                console.log('Continue journey complete'); // Debug line
+                
+            } catch (error) {
+                console.error('Continue journey error:', error);
+                alert('🐱 Had trouble continuing the journey. Please try again.');
+            }
+        }
+
+        // Add event listeners for thought checkboxes
+        document.querySelectorAll('input[name="thoughtType"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const parent = this.closest('.thought-input');
+                if (this.checked) {
+                    parent.classList.add('selected');
+                } else {
+                    parent.classList.remove('selected');
+                    // Clear the text when unchecking
+                    const textInput = document.getElementById(this.id + '-text');
+                    if (textInput) textInput.value = '';
+                }
+            });
+        });
+
+        // Add event listeners for ANT checkboxes
+        document.querySelectorAll('.ant-option input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const parent = this.closest('.ant-option');
+                if (this.checked) {
+                    parent.classList.add('selected');
+                } else {
+                    parent.classList.remove('selected');
+                }
+            });
+        });
+
+        // Make ant options clickable
+        document.querySelectorAll('.ant-option').forEach(option => {
+            option.addEventListener('click', function(e) {
+                // Don't trigger if clicking directly on the checkbox or label
+                if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL') {
+                    return;
+                }
+                const checkbox = this.querySelector('input[type="checkbox"]');
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change'));
+            });
+        });
+
+        // Also add direct click handlers for the checkboxes themselves
+        document.querySelectorAll('.ant-option input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent double-triggering
+            });
+        });
+
+        // Initialize
+        updateProgress();
+        updateButtons();
+
+        // Add some gentle animations and interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add gentle hover effects to form elements
+            document.querySelectorAll('textarea, input[type="text"]').forEach(element => {
+                element.addEventListener('focus', function() {
+                    this.style.transform = 'scale(1.02)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+                
+                element.addEventListener('blur', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                // Ctrl+Enter to go to next step
+                if (currentStep < totalSteps) {
+                    nextStep();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
